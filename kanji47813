@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Ôn Tập Kotoba N4 - Bài 4, 7, 8, 13</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        header p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .filter-btn {
+            background: #fff;
+            border: 2px solid #3498db;
+            color: #3498db;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: #3498db;
+            color: #fff;
+        }
+        .flashcard-container {
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border-radius: 15px;
+            background: #fff;
+            text-align: center;
+        }
+        .card-back {
+            transform: rotateY(180deg);
+            background: #e8f8f5;
+            border: 2px solid #1abc9c;
+        }
+        .card-front {
+            border: 2px solid #3498db;
+        }
+        .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #3498db;
+            color: #fff;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .card-back .badge {
+            background: #1abc9c;
+        }
+        .word {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .meaning {
+            font-size: 1.4rem;
+            color: #16a085;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .hint {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            border-top: 1px dashed #bdc3c7;
+            padding-top: 10px;
+            width: 100%;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn {
+            background: #2c3e50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #34495e;
+        }
+        .counter {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+        .flip-instruction {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📚 Ôn tập Kotoba N4 - Bài 4, 7, 8, 13</h1>
+        <p>Giáo trình Kanji Tamago N4</p>
+    </header>
+
+    <div class="filter-container">
+        <button class="filter-btn active" onclick="filterCards('all')">Tất cả</button>
+        <button class="filter-btn" onclick="filterCards('Bài 4')">Bài 4</button>
+        <button class="filter-btn" onclick="filterCards('Bài 7')">Bài 7</button>
+        <button class="filter-btn" onclick="filterCards('Bài 8')">Bài 8</button>
+        <button class="filter-btn" onclick="filterCards('Bài 13')">Bài 13</button>
+    </div>
+
+    <div class="flashcard-container" onclick="flipCard()">
+        <div class="flashcard" id="flashcard">
+            <div class="card-face card-front">
+                <span class="badge" id="front-badge">Bài 4</span>
+                <div class="word" id="front-word">問い合わせ</div>
+                <div class="flip-instruction">(Nhấp vào thẻ để xem nghĩa)</div>
+            </div>
+            <div class="card-face card-back">
+                <span class="badge" id="back-badge">Bài 4</span>
+                <div class="meaning" id="back-meaning">Nơi hỏi đáp, thắc mắc, liên hệ</div>
+                <div class="hint" id="back-hint">Kanji: 問 | On: モン | Kun: と・う, と・い</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="prevCard()">◀ Quay lại</button>
+        <span class="counter" id="counter">1 / 44</span>
+        <button class="btn" onclick="nextCard()">Tiếp theo ▶</button>
+    </div>
+
+    <script>
+        const cardsData = [
+            // Bài 4
+            { lesson: "Bài 4", word: "問い合わせ", meaning: "Nơi hỏi đáp, thắc mắc, sự liên hệ hỏi thông tin", hint: "Kanji: 問 | On: モン | Kun: と・う, と・い" },
+            { lesson: "Bài 4", word: "質問", meaning: "Câu hỏi, chất vấn", hint: "Kanji: 問 | On: モン | Kun: と・う, と・い" },
+            { lesson: "Bài 4", word: "集合する", meaning: "Tập hợp, tụ tập", hint: "Kanji: 合 | On: ゴウ, カッ, ガッ | Kun: あ・う, あ・わせる" },
+            { lesson: "Bài 4", word: "定員", meaning: "Sức chứa, định ngạch số người", hint: "Kanji: 定 | On: テイ, ジョウ | Kun: さだ・める" },
+            { lesson: "Bài 4", word: "予定", meaning: "Dự định, kế hoạch", hint: "Kanji: 定 | On: テイ, ジョウ | Kun: さだ・める" },
+            { lesson: "Bài 4", word: "定食", meaning: "Suất ăn cố định (set menu)", hint: "Kanji: 定 | On: テイ, ジョウ | Kun: さだ・める" },
+            { lesson: "Bài 4", word: "会社員", meaning: "Nhân viên công ty", hint: "Kanji: 員 | On: イン | Kun: (Không có)" },
+            { lesson: "Bài 4", word: "無料", meaning: "Miễn phí", hint: "Kanji: 無 | On: ム, ブ | Kun: な・い" },
+            { lesson: "Bài 4", word: "無い", meaning: "Không có", hint: "Kanji: 無 | On: ム, ブ | Kun: な・い" },
+            { lesson: "Bài 4", word: "無理な", meaning: "Vô lý, quá sức, không thể", hint: "Kanji: 無 | On: ム, ブ | Kun: な・い" },
+
+            // Bài 7
+            { lesson: "Bài 7", word: "牛肉", meaning: "Thịt bò", hint: "Kanji: 牛 | On: ギュウ | Kun: うし" },
+            { lesson: "Bài 7", word: "牛乳", meaning: "Sữa bò", hint: "Kanji: 牛 | On: ギュウ | Kun: うし" },
+            { lesson: "Bài 7", word: "魚料理", meaning: "Món ăn chế biến từ cá", hint: "Kanji: 魚 | On: ギョ | Kun: さかな, うお" },
+            { lesson: "Bài 7", word: "ご飯", meaning: "Cơm, bữa ăn", hint: "Kanji: 飯 | On: ハン | Kun: めし" },
+            { lesson: "Bài 7", word: "野菜", meaning: "Rau củ", hint: "Kanji: 菜 | On: サイ | Kun: な" },
+            { lesson: "Bài 7", word: "調味料", meaning: "Gia vị", hint: "Kanji: 味 | On: ミ | Kun: あじ, あじ・わう" },
+            { lesson: "Bài 7", word: "意味", meaning: "Ý nghĩa", hint: "Kanji: 味 | On: ミ | Kun: あじ" },
+            { lesson: "Bài 7", word: "景色", meaning: "Phong cảnh", hint: "Kanji: 色 | On: シキ, ショク | Kun: いろ" },
+            { lesson: "Bài 7", word: "茶色", meaning: "Màu nâu", hint: "Kanji: 茶 | On: チャ, サ | Kun: (Không có)" },
+            { lesson: "Bài 7", word: "喫茶店", meaning: "Quán trà, quán cà phê", hint: "Kanji: 茶 | On: チャ, サ | Kun: (Không có)" },
+            { lesson: "Bài 7", word: "少し", meaning: "Một chút", hint: "Kanji: 少 | On: ショウ | Kun: すく・ない, すこ・し" },
+            { lesson: "Bài 7", word: "少々", meaning: "Một chút (thể lịch sự)", hint: "Kanji: 少 | On: ショウ | Kun: すく・ない, すこ・し" },
+            { lesson: "Bài 7", word: "少ない", meaning: "Ít", hint: "Kanji: 少 | On: ショウ | Kun: すく・ない, すこ・し" },
+            { lesson: "Bài 7", word: "洗う", meaning: "Rửa, giặt", hint: "Kanji: 洗 | On: セン | Kun: あら・う" },
+            { lesson: "Bài 7", word: "洗濯する", meaning: "Giặt giũ", hint: "Kanji: 洗 | On: セン | Kun: あら・う" },
+            { lesson: "Bài 7", word: "弱い", meaning: "Yếu, yếu ớt", hint: "Kanji: 弱 | On: ジャク | Kun: よわ・い, よわ・まる" },
+            { lesson: "Bài 7", word: "弱火", meaning: "Lửa nhỏ (khi nấu ăn)", hint: "Kanji: 弱 | On: ジャク | Kun: よわ・い" },
+            { lesson: "Bài 7", word: "砂糖", meaning: "Đường", hint: "Từ vựng nấu ăn chủ đề Bài 7" },
+            { lesson: "Bài 7", word: "塩", meaning: "Muối", hint: "Từ vựng nấu ăn chủ đề Bài 7" },
+            { lesson: "Bài 7", word: "油", meaning: "Dầu ăn", hint: "Từ vựng nấu ăn chủ đề Bài 7" },
+            { lesson: "Bài 7", word: "卵", meaning: "Trứng", hint: "Từ vựng nấu ăn chủ đề Bài 7" },
+
+            // Bài 8
+            { lesson: "Bài 8", word: "空室", meaning: "Phòng trống", hint: "Kanji: 空 | On: クウ | Kun: そら, あ・く, から" },
+            { lesson: "Bài 8", word: "空気", meaning: "Không khí", hint: "Kanji: 空 | On: クウ | Kun: そら, あ・く, から" },
+            { lesson: "Bài 8", word: "室内", meaning: "Trong phòng", hint: "Kanji: 室 | On: シツ | Kun: (Không có)" },
+            { lesson: "Bài 8", word: "教室", meaning: "Phòng học", hint: "Kanji: 室 | On: シツ | Kun: (Không có)" },
+            { lesson: "Bài 8", word: "和室", meaning: "Phòng phong cách Nhật (phòng chiếu Tatami)", hint: "Kanji: 和 | On: ワ, オ | Kun: やわ・らぐ" },
+
+            // Bài 13
+            { lesson: "Bài 13", word: "習う", meaning: "Học tập", hint: "Kanji: 習 | On: シュウ | Kun: なら・う" },
+            { lesson: "Bài 13", word: "予習", meaning: "Chuẩn bị bài trước khi đến lớp", hint: "Kanji: 習 | On: シュウ | Kun: なら・う" },
+            { lesson: "Bài 13", word: "練習", meaning: "Luyện tập", hint: "Kanji: 習 | On: シュウ | Kun: なら・う" },
+            { lesson: "Bài 13", word: "食堂", meaning: "Nhà ăn, phòng ăn", hint: "Kanji: 堂 | On: ドウ | Kun: (Không có)" },
+            { lesson: "Bài 13", word: "出席", meaning: "Tham dự, có mặt", hint: "Kanji: 席 | On: セキ | Kun: (Không có)" },
+            { lesson: "Bài 13", word: "欠席", meaning: "Vắng mặt", hint: "Kanji: 欠 | On: ケツ | Kun: か・ける, か・く" },
+            { lesson: "Bài 13", word: "全部", meaning: "Tất cả, toàn bộ", hint: "Kanji: 全 | On: ゼン | Kun: まった・く, すべて" },
+            { lesson: "Bài 13", word: "安全", meaning: "An toàn", hint: "Kanji: 全 | On: ゼン | Kun: まった・く, すべて" }
+        ];
+
+        let currentFilteredCards = [...cardsData];
+        let currentIndex = 0;
+
+        const flashcardEl = document.getElementById('flashcard');
+        const frontWordEl = document.getElementById('front-word');
+        const frontBadgeEl = document.getElementById('front-badge');
+        const backMeaningEl = document.getElementById('back-meaning');
+        const backHintEl = document.getElementById('back-hint');
+        const backBadgeEl = document.getElementById('back-badge');
+        const counterEl = document.getElementById('counter');
+
+        function updateCard() {
+            if (currentFilteredCards.length === 0) {
+                frontWordEl.textContent = "Không có từ vựng";
+                backMeaningEl.textContent = "Trống";
+                backHintEl.textContent = "";
+                counterEl.textContent = "0 / 0";
+                return;
+            }
+            if (currentIndex >= currentFilteredCards.length) currentIndex = 0;
+            if (currentIndex < 0) currentIndex = currentFilteredCards.length - 1;
+
+            const card = currentFilteredCards[currentIndex];
+            flashcardEl.classList.remove('flipped');
+            
+            frontWordEl.textContent = card.word;
+            frontBadgeEl.textContent = card.lesson;
+            backMeaningEl.textContent = card.meaning;
+            backHintEl.textContent = card.hint;
+            backBadgeEl.textContent = card.lesson;
+            counterEl.textContent = `${currentIndex + 1} / ${currentFilteredCards.length}`;
+        }
+
+        function flipCard() {
+            flashcardEl.classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            event.stopPropagation();
+            currentIndex = (currentIndex + 1) % currentFilteredCards.length;
+            updateCard();
+        }
+
+        function prevCard() {
+            event.stopPropagation();
+            currentIndex = (currentIndex - 1 + currentFilteredCards.length) % currentFilteredCards.length;
+            updateCard();
+        }
+
+        function filterCards(lesson) {
+            event.stopPropagation();
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (lesson === 'all') {
+                currentFilteredCards = [...cardsData];
+            } else {
+                currentFilteredCards = cardsData.filter(card => card.lesson === lesson);
+            }
+            currentIndex = 0;
+            updateCard();
+        }
+
+        // Khởi tạo hiển thị ban đầu
+        updateCard();
+    </script>
+</body>
+</html>
